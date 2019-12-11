@@ -159,7 +159,7 @@ int main()
 }
 ```
 
-# 符合类型
+# 复合类型
 ## 引用
 * 引用一般指的是左值引用，C++11引入了右值引用
 * 定义引用时，程序把引用和它的初始值绑定在一起，而不是将初始值拷贝给引用。一旦初始化完成，引用将和它的初始值对象一直绑定在一起。因为无法令引用重新绑定到另外一个对象，因此引用必须初始化。
@@ -244,6 +244,7 @@ int *pi = zero; //错误，不能把int变量直接赋值给指针
 
 # const限定符
 * const必须初始化，不能对带有const的类型执行改变数据的操作
+> 猜测：顶层const必须初始化，因为本身不能改变，不初始化根本没法用。而底层const(常量指针)可以不初始化
 
 ## 默认情况下，const对象仅在文件内有效
 * 在编译时会进行预处理，将代码中所有带const限定符的变量用初始化的常亮替代。
@@ -331,4 +332,75 @@ b = &c;//false
 ### const对拷贝的影响
 * 顶层const对拷贝无影响
 * 底层const对拷贝有影像
-> 拷贝两者有相同的底层const的，或者被拷贝数据可以从非常量转变为常量。
+> 拷贝两者有相同的底层const的，或者被拷贝数据可以从非常量转变为常量,才无影响
+```cpp
+int main()
+{   
+// 顶层const对拷贝无影响
+    {
+        // const int -> int  yes
+        const int b = 1;
+        int a = b;
+
+        // int -> const int yes
+        int c = 1;
+        const int d = c;
+    } 
+
+    // &int(int*) -> int *const/const int*/const int *const
+    int a = 1;
+    int *const b = &a; //ok
+    const int *c = &a; //ok
+    const int *const d = &a; //ok
+
+    // &(const int) -> int *const/const int*/const int *const
+    const int e = 1;
+    int *const f = &e; //error 没有相同的底层const
+    const int *g = &e; //ok
+    const int *const h = &e; //ok  &e可以转换成const int *const
+
+    //(int cont*) -> int *const/const int*/const int *const
+    int i = 1;
+    int *const  j= &i;
+    int *const  k = j; //ok
+    const int*  l = j; //ok
+    const int *const m = j; //ok
+
+    return 0;
+}
+```
+* 总结
+> 1) 对于非指针类型之间的拷贝,没有限制 const int <-> int
+
+> 2) 对于指针之间的拷贝。右值没有底层const,总合法;右值有底层const,则看左值有没有底层const,有则合法,没有则不合法。   
+> * 常量对象不能赋值给非常量引用,常量对象不能赋值给非常量指针
+
+> 3) 对于指针和非指针之间，类型不同不合法;
+
+## constexpr和常量表达式
+* 数据类型是常量并且初始值是常量或常量或两者混合的是常量表达式。
+```cpp
+const int a = 1; //true
+const int b = a+1; //true
+int c = 1; //false
+const int d = get_d(); //false
+```
+
+### constexpr变量
+* constexpr定义的变量必须要用常量表达式初始化
+* constexpr是顶层const，即其本身为常量
+* 对于字面量
+> 算术类型，引用和指针，字面值常量类，枚举都说字面值  
+> 自定义类，IO库，string类等不算字面值
+
+### constexpr 指针
+* constexpr指针只能指向地址固定的变量，比如全局变量，staitc变量
+```cpp
+constexpr int *p1; //顶层const
+const int *p2;  //底层const
+int *const p3;  //顶层const
+
+constexpr const int *p4;
+//<=>
+const int *const p5;
+```
