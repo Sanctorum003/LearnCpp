@@ -296,7 +296,8 @@ c = 1;//false
 ```
 
 ## 指针和const
-### 常量指针
+> 对于指针常量和常量指针的定义C++ primer里定义的跟大多数教材不一样
+### 指针常量(pointer to const)
 * 从右往左读，它是一个指针，是一个指向常量类型的指针。说明不能改变他所指向对象的内容。但是可以改变它指向的对象。
 ```cpp
 const int a = 1;
@@ -305,7 +306,8 @@ const int *c = &a;
 *c = 1;//fasle
 c = &b;//true
 ```
-### 指针常量
+
+### 常量指针(const pointer)
 * 从右往左读，它是一个常量，说明指针的地址不能改变。但是可以改变它指向对象的内容。
 ```cpp
 int a = 1;
@@ -315,19 +317,9 @@ c= &b;//false
 c= 2;//true
 ```
 
-### 常量指针常量
-* 从右往左读，首先他是一个常量，是常量指针类型的常量，而且它的内容和他指向的对象都不能改变。
-```cpp
-const int a = 1;
-int c = 2;
-const int *const b = &a;
-*b = 1;//false
-b = &c;//false
-```
-
 ## **顶层const和底层const**
-* 顶层const说明指针本身是个常量-指针常量
-* 底层const说明指针指向的对象是个常量-常量指针
+* 顶层const说明指针本身是个常量-常量指针
+* 底层const说明指针指向的对象是个常量-指针常量
 
 ### const对拷贝的影响
 * 顶层const对拷贝无影响
@@ -403,4 +395,45 @@ int *const p3;  //顶层const
 constexpr const int *p4;
 //<=>
 const int *const p5;
+```
+# 处理类型
+## 类型别名
+### typedef
+```cpp
+typedef double wages; //wages是double的别名
+typedef wages base,*p;//base是double的别名,p是double*的别名
+```
+
+### using
+* c++11推荐用一下语法
+```cpp
+using double = wages; //wages是double的别名
+//using 别名 = 类型
+```
+### 对于符合符合类型的别名的声明语句要小心
+```cpp
+typedef char *pstring;
+const pstring cstr = 0; // pstring是一个整体,是个指向char的指针。const修饰他。所以它本身是一个常量。所以它是常量指针(const pointer)
+const char *cstr; //而这里*修饰const char,所以它是指向char常量的指针,即指针常量(pointer to const)
+```
+
+## auto类型说明符
+* auto用于自动判别变量的类型
+* 同一行内的基本类型需要一样
+```cpp
+auto i =0, PI = 3.14 //wrong
+```
+
+### 忽略顶层const，不忽略底层const
+```cpp
+const int ci = i,&cr = ci;
+auto b = ci; //b is int
+auto c = cr; //c is int
+auto d = &i; //d is pointer to int
+auto e = &ci;//e is pointer to const int
+```
+
+### 声明顶层const的auto类型
+```cpp
+const auto f = 0;
 ```
