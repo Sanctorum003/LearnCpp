@@ -1,3 +1,5 @@
+[TOC]
+
 # 基本内置类型
 ## 算术类型
 * 一个char的大小和一个机器字节一样。
@@ -254,13 +256,14 @@ int *pi = zero; //错误，不能把int变量直接赋值给指针
 * 如果要在多个文件中共享const对象，在需要声明变量的时候前面加extern
 
 ## 对const的引用
+<span id="对const的引用"></span>
 * 别称**常量引用**
 
 * 常量引用可以引用常量和非常量
 * 非常量引用不能引用常量
 
 ```cpp
-const int a =1;
+const int a = 1;
 int  d = 1;
 
 const int &b = a;//true
@@ -317,9 +320,9 @@ c= &b;//false
 c= 2;//true
 ```
 
-## **顶层const和底层const**
-* 顶层const说明指针本身是个常量-常量指针
-* 底层const说明指针指向的对象是个常量-指针常量
+## 顶层const和底层const
+* 顶层const说明指针本身是个常量-常量指针(const pointer)
+* 底层const说明指针指向的对象是个常量-指针常量(pointer to const)
 
 ### const对拷贝的影响
 * 顶层const对拷贝无影响
@@ -396,6 +399,7 @@ constexpr const int *p4;
 //<=>
 const int *const p5;
 ```
+
 # 处理类型
 ## 类型别名
 ### typedef
@@ -424,7 +428,7 @@ const char *cstr; //而这里*修饰const char,所以它是指向char常量的�
 auto i =0, PI = 3.14 //wrong
 ```
 
-### 忽略顶层const，不忽略底层const
+### auto声明，忽略顶层const，不忽略底层const
 ```cpp
 const int ci = i,&cr = ci;
 auto b = ci; //b is int
@@ -436,4 +440,56 @@ auto e = &ci;//e is pointer to const int
 ### 声明顶层const的auto类型
 ```cpp
 const auto f = 0;
+```
+
+### auto的引用
+* 规则与引用的一致  
+
+[对const的引用](#对const的引用)
+
+```cpp
+auto &g = ci; //true,因为auto会考虑到底层const， g is reference to const
+auto &h = 42; //wrong,不能为非常量引用绑定字面值
+const auto &j =42;//true,可以为常量引用绑定字面值
+```
+```cpp
+int i = 0;
+const int ci = i;
+
+auto k = ci,&l = i;
+auto &m = ci,*p = &ci;
+auto &n = i,*p2=&ci; //注意上面说的auto同一行内的右值要类型相同
+```
+
+### Exercise 2.35
+
+> Determine the types deduced in each of the following definitions. Once you’ve figured out the types, write a program to see whether you were correct.
+>
+> ```cpp
+> const int i = 42;
+> auto j = i;
+> const auto &k = i;
+> auto *p = &i;
+> const auto j2 = i, &k2 = i;
+> ```
+
+- `i` is `const int`.
+- `j` is `int`.
+> auto 忽略顶层const
+- `k` is `const int&`.
+- `p` is `const int *`.
+> k和p需要考虑auto不忽略顶层const
+- `j2` is `const int`.
+- `k2` is `const int&`.
+
+## decltype
+* decltype 用于选择并返回操作数的数据类型
+> 只推断类型，不计算表达式的值
+
+> decltype能返回包括顶层从上图和引用在内的类型
+```cpp
+const int ci = 0,&cj = ci;
+decltype(ci) x = 0; // x is const int
+decltype(cj) y = x; // y is const int&,并初始化绑定x
+decltype(cj) z;     // wrong 引用必须初始化
 ```

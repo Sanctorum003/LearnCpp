@@ -1,11 +1,14 @@
 #include <iostream>
 using namespace std;
 
-typedef char *pstring;
-
 int main()
-{   
-    const pstring cstr = 0;
-    const pstring *ps;
+{
+    int i = 0;
+    const int ci = i;
+
+    auto k = ci,&l = i;
+    auto &m = ci,*p = &ci;
+    auto *p2=& ci;
+
     return 0;
 }
