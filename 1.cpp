@@ -3,9 +3,11 @@ using namespace std;
 
 int main()
 {
-    int a[] = {1,2,3,4,5,};
-    int *p = &a[2];
-    cout<<p[1]<<" "<<p[-1]<<endl;
-
+    for(int i = 0; i < 10; ++i)
+        if(i%2 == 0)
+            continue;
+        else
+            cout<<i<<endl;
+        
     return 0;
 }
