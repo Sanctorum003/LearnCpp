@@ -1,48 +1,23 @@
 #include <iostream>
 using namespace std;
 
-
-// 线程安全的单例模式
-
 class A
 {
 public:
-	void print()
+	A(int _a = 0):a(_a){}
+
+	int getA()const
 	{
-		cout << 2 << endl;
+		A* b = new A();
+		a = 2;
+		return a;
 	}
+
+	int a;
 };
 
-class Singleton
+int main()
 {
-private:
-	Singleton() { }
-	~Singleton() { }
-	Singleton(const Singleton &);
-	Singleton & operator = (const Singleton &);
-
-public:
-	static Singleton& GetInstance()
-	{
-		static Singleton instance;
-		static A a;
-		a.print();
-		// cout << &instance << endl;
-		instance.print();
-		return instance;
-	}
-
-	void print()
-	{
-		// b.print();
-		cout << 2 << endl;
-	}
-};
-
-int main(void)
-{
-	Singleton::GetInstance();//.print();
-	
-	// system("pasue");
+	A a;
 	return 0;
 }
