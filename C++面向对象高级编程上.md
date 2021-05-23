@@ -214,3 +214,115 @@ operator delete(ps); // 释放内存，其内部调用free(ps)
 > delete[]会调用多次析构函数，对于数组来说释放内存要delete每个对象.
 
 * 对于动态内存分配的底层原理看CSAPPd第九章
+
+# 类模板、函数模板等
+* 定义:变量获得内存
+## static
+* staitc成员没有this指针
+* static函数没有this指针,不能处理成员变量
+
+* 调用方式
+    - 通过object调用
+    - 通过class name调用
+
+## 单例
+* 饿汉模式
+```cpp
+class A{
+public:
+    static A& getInstance(){return a;}
+    setup() {...}
+private:
+    A();
+    A(const A& rhs);
+    static A a;
+    ...
+};
+
+* 懒汉模式
+```cpp
+class A{
+public:
+    static A& getInstance();
+    setup(){...}
+private:
+    A();
+    A(const A& rhs);
+    ...
+};
+
+A& A::getInstance()
+{
+    static A a;
+    return a;
+}
+```
+
+## 类模板
+* 模板会造成代码的膨胀
+* class T <==> typename T
+
+## 函数模板
+* 编译器会被函数模板进行参数推导.
+
+## namespace
+* using directive
+    - using namespace std;
+* using declaration
+    - suing std::cout;
+* 直接用
+    - std::cin << ...
+
+# 组合与继承
+## 组合
+* 一个类中存在其他类
+* UML图中呈现黑色棱形引出
+* 适配器模式
+
+### Composition(组合)关系下的构造和析构
+* 构造由内而外
+    - Container的构造函数首先调用Component的default构造函数,然后才执行自己
+      - 调用的是默认构造函数
+
+```cpp
+Container::Container(...):Component(){...};
+```
+* 析构由外而内
+  - Container的析构函数首先调用自己,然后才调用Componet的析构函数
+
+```cpp
+Container::Container(...){...~Component()};
+```
+## Delegation(委托)
+* 一个类中存在其他类的**指针**
+* UML图中呈现白色棱形引出
+* pimpl（Handle/Body）[桥接模式]
+
+## 继承
+* UML图中呈现白色三角形指向基类
+
+* 构造由内而外
+    - Derived的构造函数首先调用Base的default构造函数,然后才执行自己
+      - 调用的是默认构造函数
+
+```cpp
+Derived::Derived(...):base(){...};
+```
+* 析构由外而内
+  - Derived的析构函数首先调用自己,然后才调用base的析构函数
+
+```cpp
+Derived::Derived(...){...~base()};
+```
+* 父类的析构函数必须要virtual
+
+# 虚函数
+* non-virtual函数
+    - 你不希望derived class 重新定义函数
+* virutal函数
+    - 你希望derived class 可以重新定义函数函数且它已经有默认定义
+* pure virtual函数
+    - 你希望derived class 一定要重新定义函数且不存在默认定义
+
+## 委托+继承
+* 观察者模式
