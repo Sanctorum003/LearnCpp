@@ -263,7 +263,7 @@ A& A::getInstance()
 * class T <==> typename T
 
 ## 函数模板
-* 编译器会被函数模板进行参数推导.
+* 编译器会被函数模板进行实参推导.
 
 ## namespace
 * using directive
